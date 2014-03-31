@@ -21,6 +21,13 @@ int main( int argc, char** argv )
 	// if not loaded assume no arguments passed in, try use default cow model instead.
 	if (!loadedModel) loadedModel = osgDB::readNodeFile("cow.osgt");
 
+	if(loadedModel)
+	{
+		//Turn off lighting
+		osg::StateSet* stateset = loadedModel->getOrCreateStateSet();
+		stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+
+	}
 	// Still no loaded model, then exit
 	if (!loadedModel) return 0;
 
