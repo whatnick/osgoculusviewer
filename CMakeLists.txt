@@ -29,7 +29,7 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 # Library files
 #######################################
 FIND_PACKAGE( OpenGL REQUIRED )
-FIND_PACKAGE( OpenSceneGraph REQUIRED osgViewer osgDB osgGA)
+FIND_PACKAGE( OpenSceneGraph REQUIRED osgViewer osgDB osgGA osgUtil)
 FIND_PACKAGE( OculusSDK REQUIRED )
 
 INCLUDE_DIRECTORIES(BEFORE

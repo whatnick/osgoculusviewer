@@ -10,6 +10,8 @@
 #include <osgViewer/Viewer>
 
 #include "oculusViewConfig.h"
+#include "DoomLikeManipulator.h"
+#include "AeroTerrainManipulator.h"
 
 int main( int argc, char** argv )
 {
@@ -39,6 +41,12 @@ int main( int argc, char** argv )
 	viewer.apply(oculusViewConfig);
 	// Add loaded model to viewer
 	viewer.setSceneData(loadedModel);
+
+	osgGA::CameraManipulator* manip = new AeroTerrainManipulator();
+	manip->setAutoComputeHomePosition(true);
+
+	viewer.setCameraManipulator(manip);
+
 	// Start Viewer
 	return viewer.run();
 }

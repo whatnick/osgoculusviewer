@@ -60,7 +60,7 @@ IF(USE_VIEW_CONFIG)
 	# Create executable
 	#####################################################################
 	IF(BUILD_EXAMPLE)
-		ADD_EXECUTABLE(${TARGET_TARGETNAME} osgoculusviewer.cpp)
+		ADD_EXECUTABLE(${TARGET_TARGETNAME} osgoculusviewer.cpp DoomLikeManipulator.cpp DoomLikeManipulator.h AeroTerrainManipulator.cpp AeroTerrainManipulator.h)
 		TARGET_LINK_LIBRARIES(${TARGET_TARGETNAME} ${TARGET_LIBRARYNAME})
 	ENDIF(BUILD_EXAMPLE)
 ENDIF()
