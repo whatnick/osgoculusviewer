@@ -1,13 +1,15 @@
 /*
- * main.cpp
- *
- *  Created on: Jul 03, 2013
- *      Author: Bjorn Blissing
- */
+* main.cpp
+*
+*  Created on: Jul 03, 2013
+*      Author: Bjorn Blissing
+*/
 
 #include <osgDB/ReadFile>
 #include <osgGA/TrackballManipulator>
 #include <osgViewer/Viewer>
+#include <osgGA/AnimationPathManipulator>
+#include <osgGA/KeySwitchMatrixManipulator>
 
 #include "oculusViewConfig.h"
 #include "DoomLikeManipulator.h"
@@ -21,7 +23,7 @@ int main( int argc, char** argv )
 	osg::ref_ptr<osg::Node> loadedModel = osgDB::readNodeFiles(arguments);
 
 	// if not loaded assume no arguments passed in, try use default cow model instead.
-	if (!loadedModel) loadedModel = osgDB::readNodeFile("cow.osgt");
+	//NO NEED FOR COWS !!if (!loadedModel) loadedModel = osgDB::readNodeFile("cow.osgt");
 
 	if(loadedModel)
 	{
@@ -39,14 +41,37 @@ int main( int argc, char** argv )
 	osgViewer::Viewer viewer(arguments);
 	// Apply view config
 	viewer.apply(oculusViewConfig);
+
 	// Add loaded model to viewer
 	viewer.setSceneData(loadedModel);
 
+	osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
+
 	osgGA::CameraManipulator* manip = new AeroTerrainManipulator();
 	manip->setAutoComputeHomePosition(true);
+	keyswitchManipulator->addMatrixManipulator( '1', "AeroTerrain",  manip);
 
-	viewer.setCameraManipulator(manip);
 
+	//Add path based manipulators
+	std::string pathfile;
+	double animationSpeed = 1.0;
+	while(arguments.read("--speed",animationSpeed) ) {}
+	char keyForAnimationPath = '2';
+	while (arguments.read("-p",pathfile))
+	{
+		osgGA::AnimationPathManipulator* apm = new osgGA::AnimationPathManipulator(pathfile);
+		if (apm || !apm->valid())
+		{
+			apm->setTimeScale(animationSpeed);
+
+			unsigned int num = keyswitchManipulator->getNumMatrixManipulators();
+			keyswitchManipulator->addMatrixManipulator( keyForAnimationPath, "Path", apm );
+			keyswitchManipulator->selectMatrixManipulator(num);
+			++keyForAnimationPath;
+		}
+	}
+
+	viewer.setCameraManipulator(keyswitchManipulator.get());
 	// Start Viewer
 	return viewer.run();
 }
