@@ -26,6 +26,23 @@ SET(TARGET_DEPRECATED_H
 	hmdcamera.h
 )
 
+# Target Additional sources
+SET(TARGET_ADD_SRC
+	DoomLikeManipulator.cpp
+	AeroTerrainManipulator.cpp
+	ReaderWriterScene.cpp
+	AeroUtil.cpp
+	SkyBox.cpp
+)
+
+#Target Additional headers
+SET(TARGET_ADD_H
+	DoomLikeManipulator.h
+	AeroTerrainManipulator.h
+	AeroUtil.h
+	SkyBox.h
+)
+
 #####################################################################
 # Create library
 #####################################################################
@@ -60,7 +77,7 @@ IF(USE_VIEW_CONFIG)
 	# Create executable
 	#####################################################################
 	IF(BUILD_EXAMPLE)
-		ADD_EXECUTABLE(${TARGET_TARGETNAME} osgoculusviewer.cpp DoomLikeManipulator.cpp DoomLikeManipulator.h AeroTerrainManipulator.cpp AeroTerrainManipulator.h)
+		ADD_EXECUTABLE(${TARGET_TARGETNAME} osgoculusviewer.cpp ${TARGET_ADD_SRC} ${TARGET_ADD_H})
 		TARGET_LINK_LIBRARIES(${TARGET_TARGETNAME} ${TARGET_LIBRARYNAME})
 	ENDIF(BUILD_EXAMPLE)
 ENDIF()

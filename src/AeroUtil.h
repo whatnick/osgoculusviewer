@@ -6,5 +6,6 @@ void getEulerFromQuat(osg::Quat q, double& heading, double& attitude, double& ba
 float area3D_Polygon( int n, const std::vector<osg::Vec3d> V, osg::Vec3 N);
 void getEulerFromMatrix( osg::Vec3& euler, const osg::Matrix& rotation );
 float ClampUnity( float x );
+std::vector<std::string> splitPath(std::string fullPath);
 
 #endif

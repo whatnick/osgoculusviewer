@@ -22,6 +22,9 @@
 
 #include <stdio.h>
 
+//Include windows specific header to find file paths
+#include <Windows.h>
+
 #include "SkyBox.h"
 #include "AeroUtil.h"
 
@@ -156,6 +159,7 @@ osgDB::ReaderWriter::ReadResult ReaderWriterScene::readNode(std::istream& fin, c
         {
             skyBox = new SkyBox;
 			skyBox->getOrCreateStateSet()->setTextureAttributeAndModes( 0, new osg::TexGen );
+
 			skyBox->setEnvironmentMap( 0,
 				osgDB::readImageFile("Skybox/negx.jpg"), osgDB::readImageFile("Skybox/posx.jpg"),
 				osgDB::readImageFile("Skybox/negy.jpg"), osgDB::readImageFile("Skybox/posy.jpg"),
@@ -211,25 +215,21 @@ osgDB::ReaderWriter::ReadResult ReaderWriterScene::readNode(std::istream& fin, c
                     double angle = osg::DegreesToRadians(osg::asciiToDouble(modelTag->properties[zRotationProperty].c_str()));
                     model->rotation *= osg::Quat(angle, osg::Vec3d(0.0,0.0,1.0));
                 }
-				char fname[255];
-				char dir[255];
-				char ext[20];
 				
-				#ifdef WIN32
-				char drive[4];
-				_splitpath(modelFilename.c_str(),drive,dir,fname,ext);
-				#endif
+				std::vector<std::string> bits = splitPath(modelFilename);
 
+				std::string dir = bits[0];
+				std::string fname = bits[1];
+				std::string ext = bits[2];
 
-				#ifdef APPLE
-				fname = BaseName(modelFilename);
-				#endif
-				std::string proposed_name = std::string(fname)+std::string(ext);
+				char tmp[256];
+
+				std::string proposed_name = fname+ext;
 				if(names.find(proposed_name)!=names.end())
 				{
 					dup_num++;
-					std::sprintf(dir, "%d", dup_num);
-					proposed_name = proposed_name + "(" + dir + ")";
+					std::sprintf(tmp, "%d", dup_num);
+					proposed_name = proposed_name + "(" + tmp + ")";
 				}
 				else
 				{

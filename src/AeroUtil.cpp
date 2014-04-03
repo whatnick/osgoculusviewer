@@ -4,6 +4,31 @@
 
 #include "AeroUtil.h"
 
+
+std::vector<std::string> splitPath(std::string fullPath)
+{
+	char fname[255];
+	char dir[255];
+	char ext[20];
+				
+	#ifdef WIN32
+	char drive[4];
+	_splitpath(fullPath.c_str(),drive,dir,fname,ext);
+	#endif
+
+
+	#if defined(APPLE) || defined(UNIX)
+	fname = BaseName(fullPath);
+	#endif
+
+	std::vector<std::string> out;
+	out.push_back(std::string(drive)+std::string(dir));
+	out.push_back(fname);
+	out.push_back(ext);
+
+	return out;
+}
+
 osg::Node* findNamedNode(const std::string& searchName, 
                                           osg::Node* currNode)
     {

@@ -14,11 +14,23 @@
 #include "oculusViewConfig.h"
 #include "DoomLikeManipulator.h"
 #include "AeroTerrainManipulator.h"
+#include "AeroUtil.h"
 
 int main( int argc, char** argv )
 {
 	// use an ArgumentParser object to manage the program arguments.
 	osg::ArgumentParser arguments(&argc,argv);
+
+	//Register program running path to DB
+	osgDB::FilePathList& pathList = osgDB::Registry::instance()->getDataFilePathList();
+	char prog_name[1024];
+	GetModuleFileName(NULL,prog_name,1024);
+	std::string prog_path = splitPath(prog_name)[0];
+
+	std::cout<<prog_path<<std::endl;
+	std::cout<<pathList.size()<<std::endl;
+	pathList.push_back(prog_path);
+
 	// read the scene from the list of file specified command line arguments.
 	osg::ref_ptr<osg::Node> loadedModel = osgDB::readNodeFiles(arguments);
 
@@ -72,6 +84,7 @@ int main( int argc, char** argv )
 	}
 
 	viewer.setCameraManipulator(keyswitchManipulator.get());
+
 	// Start Viewer
 	return viewer.run();
 }
