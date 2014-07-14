@@ -18,6 +18,7 @@
 #include <osgSim/HeightAboveTerrain>
 
 #include <osgParticle/PrecipitationEffect>
+#include <osgParticle/SmokeEffect>
 #include <osg/ShapeDrawable>
 
 #include <stdio.h>
@@ -131,6 +132,7 @@ osgDB::ReaderWriter::ReadResult ReaderWriterScene::readNode(std::istream& fin, c
 
     osg::ref_ptr<osg::Node> terrain;
     osg::ref_ptr<osgParticle::PrecipitationEffect> precipitationEffect;
+	osg::ref_ptr<osgParticle::SmokeEffect> smokeEffect;
 	osg::ref_ptr<SkyBox> skyBox;
     osg::ref_ptr<osg::ClearNode> clearNode;
 
@@ -143,6 +145,28 @@ osgDB::ReaderWriter::ReadResult ReaderWriterScene::readNode(std::istream& fin, c
     itr != root->children.end();
     ++itr)
     {
+		if((*itr)->name=="smoke")
+		{
+			osgDB::XmlNode* smokeTag = itr->get();
+			smokeEffect = new osgParticle::SmokeEffect;
+
+			double smoke_x,smoke_y,smoke_z;
+			if (smokeTag->properties.count(xPositionProperty)!=0)
+            {
+                smoke_x = osg::asciiToDouble(smokeTag->properties[xPositionProperty].c_str());
+            }
+            if (smokeTag->properties.count(yPositionProperty)!=0)
+            {
+               smoke_y = osg::asciiToDouble(smokeTag->properties[yPositionProperty].c_str());
+            }
+            if (smokeTag->properties.count(zPositionProperty)!=0)
+            {
+                smoke_z = osg::asciiToDouble(smokeTag->properties[zPositionProperty].c_str());
+            }
+			smokeEffect->setIntensity(0.4);
+			smokeEffect->setPosition(osg::Vec3d(smoke_x,smoke_y,smoke_z));
+			
+		}
         if ((*itr)->name=="snow")
         {
             precipitationEffect = new osgParticle::PrecipitationEffect;
@@ -155,15 +179,25 @@ osgDB::ReaderWriter::ReadResult ReaderWriterScene::readNode(std::istream& fin, c
             double intensity = osg::asciiToDouble((*itr)->contents.c_str());
             precipitationEffect->rain(intensity);
         }
-		if ((*itr)->name=="skybox")
+		if ((*itr)->name=="skybox_hills")
         {
             skyBox = new SkyBox;
 			skyBox->getOrCreateStateSet()->setTextureAttributeAndModes( 0, new osg::TexGen );
 
 			skyBox->setEnvironmentMap( 0,
-				osgDB::readImageFile("Skybox/negx.jpg"), osgDB::readImageFile("Skybox/posx.jpg"),
-				osgDB::readImageFile("Skybox/negy.jpg"), osgDB::readImageFile("Skybox/posy.jpg"),
-				osgDB::readImageFile("Skybox/posz.jpg"), osgDB::readImageFile("Skybox/negz.jpg") );
+				osgDB::readImageFile("Skybox_Hills/negx.jpg"), osgDB::readImageFile("Skybox_Hills/posx.jpg"),
+				osgDB::readImageFile("Skybox_Hills/negy.jpg"), osgDB::readImageFile("Skybox_Hills/posy.jpg"),
+				osgDB::readImageFile("Skybox_Hills/posz.jpg"), osgDB::readImageFile("Skybox_Hills/negz.jpg") );
+        }
+		if ((*itr)->name=="skybox_city")
+        {
+            skyBox = new SkyBox;
+			skyBox->getOrCreateStateSet()->setTextureAttributeAndModes( 0, new osg::TexGen );
+
+			skyBox->setEnvironmentMap( 0,
+				osgDB::readImageFile("Skybox_City/negx.jpg"), osgDB::readImageFile("Skybox_City/posx.jpg"),
+				osgDB::readImageFile("Skybox_City/negy.jpg"), osgDB::readImageFile("Skybox_City/posy.jpg"),
+				osgDB::readImageFile("Skybox_City/posz.jpg"), osgDB::readImageFile("Skybox_City/negz.jpg") );
         }
         else if ((*itr)->name=="terrain")
         {
@@ -342,6 +376,10 @@ osgDB::ReaderWriter::ReadResult ReaderWriterScene::readNode(std::istream& fin, c
         group->addChild(clearNode.get());
     }
 
+	if(smokeEffect.valid())
+	{
+		group->addChild(smokeEffect);
+	}
 	if (skyBox.valid())
 	{
 		//static int ReceivesShadowTraversalMask = 0x1;
